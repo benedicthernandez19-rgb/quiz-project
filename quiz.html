@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    #quiz-container {
+      margin-bottom: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    #timer {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>My Quiz</h1>
+  <div id="timer">Time left: 30s</div>
+  <div id="quiz-container"></div>
+  <button id="next-btn">Next</button>
+  <div id="result" class="hidden"></div>
+
+  <script>
+    const questions = [
+      { q: "What types of elements form ionic bonds?", options: ["Metal + Metal", "Metal + Nonmetal", "Nonmetal + Nonmetal", "Gas + Gas"], answer: 1 },
+      { q: "What do covalent bonds share?", options: ["Electrons", "Protons", "Neutrons", "Ions"], answer: 0 },
+      { q: "Water is an example of?", options: ["Ionic compound", "Covalent compound", "Metallic bond", "Gas"], answer: 1 },
+      { q: "Sodium chloride (NaCl) is?", options: ["Covalent", "Metallic", "Ionic", "Hydrogen bond"], answer: 2 },
+      { q: "Which is stronger, covalent or ionic?", options: ["Covalent", "Ionic", "Both same", "Neither"], answer: 0 },
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let timer;
+    let timeLeft = 30;
+
+    const container = document.getElementById('quiz-container');
+    const nextBtn = document.getElementById('next-btn');
+    const result = document.getElementById('result');
+    const timerDisplay = document.getElementById('timer');
+
+    function startTimer() {
+      timeLeft = 30;
+      timerDisplay.textContent = `Time left: ${timeLeft}s`;
+      timer = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = `Time left: ${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          nextQuestion(); // auto move
+        }
+      }, 1000);
+    }
+
+    function showQuestion() {
+      clearInterval(timer);
+      startTimer();
+      container.innerHTML = "";
+      const q = questions[currentQuestion];
+      const questionEl = document.createElement('h2');
+      questionEl.textContent = q.q;
+      container.appendChild(questionEl);
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.textContent = opt;
+        btn.onclick = () => {
+          if (i === q.answer) score++;
+          nextQuestion();
+        };
+        container.appendChild(btn);
+        container.appendChild(document.createElement('br'));
+      });
+    }
+
+    function nextQuestion() {
+      clearInterval(timer);
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        showQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      container.innerHTML = "";
+      nextBtn.style.display = "none";
+      timerDisplay.style.display = "none";
+      result.classList.remove('hidden');
+      result.textContent = `Your score: ${score} / ${questions.length}`;
+    }
+
+    nextBtn.onclick = nextQuestion;
+
+    showQuestion();
+  </script>
+</body>
+</html>
